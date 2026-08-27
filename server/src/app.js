@@ -48,7 +48,7 @@ app.use('/api', generalLimiter);
 app.use('/api', healthRoutes);
 app.use('/api/advisories', advisoryRoutes);
 
-// Static Client Serving (when deployed as a single Render Web Service)
+// Static Client Serving (when deployed as a single combined Render Web Service)
 const clientDistPath = path.resolve(__dirname, '../../client/dist');
 if (fs.existsSync(clientDistPath)) {
   app.use(express.static(clientDistPath));
@@ -60,7 +60,21 @@ if (fs.existsSync(clientDistPath)) {
     res.sendFile(path.join(clientDistPath, 'index.html'));
   });
 } else {
-  // API fallback if static client is deployed separately
+  // API Root Welcome Endpoint when accessed as standalone API backend
+  app.get('/', (req, res) => {
+    res.status(200).json({
+      success: true,
+      service: 'KisanAI - AI-Powered Agriculture Crop Advisory Assistant API',
+      status: 'active',
+      version: '1.0.0',
+      endpoints: {
+        health: '/api/health',
+        advisories: '/api/advisories'
+      },
+      repository: 'https://github.com/ananya6133-star/kisanAI'
+    });
+  });
+
   app.use(notFoundHandler);
 }
 
